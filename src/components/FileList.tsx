@@ -4,6 +4,7 @@ import { FileItem, formatFileSize, getFileIcon } from "@/utils/fileUtils";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { deleteFile } from "@/utils/fileUtils";
+import { Download } from "lucide-react";
 
 interface FileListProps {
   files: FileItem[];
@@ -24,13 +25,18 @@ const FileList = ({ files, onFileDelete }: FileListProps) => {
   
   const handleDownload = (file: FileItem) => {
     try {
-      // In a real app, this would download from cloud storage
-      const a = document.createElement("a");
-      a.href = file.url;
-      a.download = file.name;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      // Create an anchor element and set download attributes
+      const anchor = document.createElement("a");
+      anchor.href = file.url;
+      anchor.download = file.name;
+      anchor.style.display = "none";
+      
+      // Append to body, click and remove
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      
+      toast.success(`Downloading ${file.name}`);
     } catch (error) {
       console.error("File download error:", error);
       toast.error("Failed to download file");
@@ -70,9 +76,11 @@ const FileList = ({ files, onFileDelete }: FileListProps) => {
             <div className="col-span-2 flex gap-2 justify-end">
               <Button 
                 size="sm" 
-                variant="ghost" 
+                variant="outline"
+                className="flex items-center gap-1"
                 onClick={() => handleDownload(file)}
               >
+                <Download className="h-4 w-4" />
                 Download
               </Button>
               <Button 
